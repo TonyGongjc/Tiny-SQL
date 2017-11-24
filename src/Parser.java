@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +72,55 @@ public class Parser {
 
     public boolean SelectStatement(String m){
         System.out.println("I'm in Select");
-        String[] Command= m.trim().toLowerCase().split("\\s");
+        //String[] Command= m.trim().toLowerCase().replaceAll("[,\\s]+", ",").split(",");
+        String[] Command= m.trim().toLowerCase().replaceAll("[,\\s]+", " ").split("\\s");
+        ParseTree parseTree = new ParseTree("select");
+
+        for(int i=0; i<Command.length;i++) {
+            System.out.print(Command[i] + "\n");
+            String word=Command[i];
+            if (word.equals("distinct")) {
+                parseTree.distinct=true;
+                parseTree.distID=i;
+            }
+            if (word.equals("from")){
+                parseTree.fromID=i;
+            }
+            if (word.equals("where")){
+                parseTree.whereID=i;
+                parseTree.where=true;
+            }
+            if(i<=Command.length-2){
+                if (word.equals("order")&&Command[i+1].equals("by")){
+                    parseTree.order=true;
+                    parseTree.orderID=i;
+                }
+            }
+        }
+        if(parseTree.distinct) {
+            parseTree.dist_attribute = Command[parseTree.distID + 1];
+            parseTree.attributes = new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, 2, parseTree.fromID)));
+        }else{
+            parseTree.attributes =  new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, 1, parseTree.fromID)));
+        }
+        if(parseTree.where){
+            parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, parseTree.whereID)));
+            if(parseTree.order){
+                String[] condition= Arrays.copyOfRange(Command, parseTree.whereID+1, parseTree.orderID);
+                parseTree.expressionTree= new ExpressionTree(condition);
+                parseTree.orderBy=Command[Command.length-1];
+            }else{
+                String[] condition=Arrays.copyOfRange(Command, parseTree.whereID+1,Command.length);
+                parseTree.expressionTree= new ExpressionTree(condition);
+            }
+        }else{
+            if(parseTree.order){
+                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command,parseTree.fromID+1, parseTree.orderID)));
+            }else{
+                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID, Command.length)));
+            }
+        }
+
         return true;
     }
 
@@ -124,6 +173,5 @@ public class Parser {
         }
         br.close();
     }
-
 }
 
