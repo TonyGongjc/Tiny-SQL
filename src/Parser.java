@@ -77,8 +77,8 @@ public class Parser {
         ParseTree parseTree = new ParseTree("select");
 
         for(int i=0; i<Command.length;i++) {
-            System.out.print(Command[i] + "\n");
             String word=Command[i];
+            System.out.println(word);
             if (word.equals("distinct")) {
                 parseTree.distinct=true;
                 parseTree.distID=i;
@@ -108,10 +108,13 @@ public class Parser {
             if(parseTree.order){
                 String[] condition= Arrays.copyOfRange(Command, parseTree.whereID+1, parseTree.orderID);
                 parseTree.expressionTree= new ExpressionTree(condition);
+                System.out.println("here");
+                parseTree.expressionTree.PrintTreeNode();
                 parseTree.orderBy=Command[Command.length-1];
             }else{
                 String[] condition=Arrays.copyOfRange(Command, parseTree.whereID+1,Command.length);
                 parseTree.expressionTree= new ExpressionTree(condition);
+                parseTree.expressionTree.PrintTreeNode();
             }
         }else{
             if(parseTree.order){

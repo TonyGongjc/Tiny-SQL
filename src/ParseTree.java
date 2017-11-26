@@ -25,5 +25,7 @@ public class ParseTree {
         this.type = s;
         this.distinct = false;
         this.where = false;
+        this.attributes=new ArrayList<String>();
+        this.tables=new ArrayList<String>();
     }
 }
