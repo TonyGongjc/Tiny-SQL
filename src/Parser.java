@@ -24,21 +24,22 @@ public class Parser {
         String[] Command= m.trim().toLowerCase().split("\\s");
         String first = Command[0];
         switch (first){
-            case "create": CreateStatement(m);
+            case "create": createStatement(m);
             break;
             case "select": SelectStatement(m);
             break;
-            case "drop"  : DropStatement(m);
+            case "drop"  : dropStatement(m);
             break;
-            case "delete": DeleteStatement(m);
+            case "delete": deleteStatement(m);
             break;
-            case "insert": InsertStatement(m);
+            case "insert": insertStatement(m);
             break;
             default: throw new Exception("Not a legal command!");
         }
         return true;
     }
 
+    /*
     public boolean CreateStatement(String m) throws Exception{
         if(checkCreate(m)) {
             String[] Command= m.trim().toLowerCase().split("\\s");
@@ -69,6 +70,33 @@ public class Parser {
             throw new Exception("No legal values");
         }
     }
+
+*/
+    public Statement createStatement(String sql) {
+        Statement stmt = new Statement();
+        String regex = "create[\\s]+table[\\s]+(.+)[\\s]+\\((.*)\\)";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(sql);
+        while(m.find()){
+            stmt.tableName = m.group(1);
+            String[] tmp = m.group(2).split("[\\s]*,[\\s]*");
+            for(String s : tmp){
+                stmt.fieldNames.add(s.split(" ")[0]);
+                if(s.split("[\\s]+")[1].equals("int")){
+                    stmt.fieldTypes.add(FieldType.INT);
+                }else{
+                    stmt.fieldTypes.add(FieldType.STR20);
+                }
+            }
+        }
+        /*
+        for(FieldType s : stmt.fieldTypes){
+            System.out.println(s);
+        }
+        */
+        return stmt;
+    }
+
 
     public boolean SelectStatement(String m){
         System.out.println("I'm in Select");
@@ -120,32 +148,68 @@ public class Parser {
             if(parseTree.order){
                 parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command,parseTree.fromID+1, parseTree.orderID)));
             }else{
-                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID, Command.length)));
+                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, Command.length)));
             }
+        }
+        return true;
+    }
+
+    public String dropStatement(String sql){
+        return sql.split("[\\s]+")[2];
+    }
+
+    public boolean deleteStatement(String m){
+        System.out.println("I'm in Delete");
+        String[] Command= m.trim().toLowerCase().replaceAll("[,\\s]+", " ").split("\\s");
+        ParseTree parseTree = new ParseTree("delete");
+
+        for(int i=0; i<Command.length;i++) {
+            String word=Command[i];
+            System.out.println(word);
+            if (word.equals("where")){
+                parseTree.whereID=i;
+                parseTree.where=true;
+            }
+        }
+        if(parseTree.where){
+            parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, parseTree.whereID)));
+                String[] condition=Arrays.copyOfRange(Command, parseTree.whereID+1,Command.length);
+                parseTree.expressionTree= new ExpressionTree(condition);
+                parseTree.expressionTree.PrintTreeNode();
+        }else{
+                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, Command.length)));
         }
 
         return true;
     }
 
-    public boolean DropStatement(String m){
-        System.out.println("I'm in Drop");
-        String[] Command= m.trim().toLowerCase().split("\\s");
-        return true;
+    public Statement insertStatement(String sql){
+        Statement stmt = new Statement();
+        String regex = "insert[\\s]+into[\\s]+(.+)[\\s]+\\((.*)\\)[\\s]+values[\\s]+(.*)";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(sql);
+        if(m.find()){
+            stmt.tableName = m.group(1);
+            stmt.fieldNames = new ArrayList<>(Arrays.asList(m.group(2).split("[\\s]*,[\\s]*")));
+            String[] values = m.group(3).replace("(", "").replace(")", "").split("[\\s]*,[\\s]*");
+            int len = stmt.fieldNames.size();
+            ArrayList<String> tmp = new ArrayList<>();
+            for(int i = 0; i < values.length; ++i){
+                if(i % len == 0) {
+                    if(i != 0) stmt.fieldValues.add(tmp);
+                    tmp.clear();
+                }
+                tmp.add(values[i]);
+            }
+            stmt.fieldValues.add(tmp);
+        }else{
+            System.out.println("Invalid SQL");
+        }
+        //System.out.println(stmt.fieldValues.get(0).size());
+        return stmt;
     }
 
-    public boolean DeleteStatement(String m){
-        System.out.println("I'm in Delete");
-        String[] Command= m.trim().toLowerCase().split("\\s");
-        return true;
-    }
-
-    public boolean InsertStatement(String m){
-        System.out.println("I'm in Insert");
-        String[] Command= m.trim().toLowerCase().split("\\s");
-        return true;
-    }
-
-
+/*
     public boolean checkCreate(String m){
         String[] Command = m.trim().toLowerCase().split("\\s");
         if (Command.length <= 3) {
@@ -163,10 +227,12 @@ public class Parser {
         }
         return true;
     }
+    */
 
     public static void main(String[] args) throws IOException{
         BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
         String s = br.readLine();
+
         Parser P=new Parser();
         try {
             P.Parse(s);
