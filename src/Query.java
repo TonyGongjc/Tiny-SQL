@@ -57,8 +57,27 @@ public class Query {
     }
 
 
-    public void selectQuery(String m){
-
+    private void selectQuery(String sql){
+        Statement stmt = parser.selectStatement(sql);
+        ArrayList<Tuple> res = new ArrayList<>();
+        ParseTree parseTree = stmt.parseTree;
+        String tableName = parseTree.tables.get(0);
+        //Schema schema = schemaMG.getSchema(tableName);
+        Relation relation = schemaMG.getRelation(tableName);
+        Block block;
+        for(int i = 0; i < relation.getNumOfBlocks(); ++i){
+            relation.getBlock(i, 0);
+            block  = memory.getBlock(0);
+            ArrayList<Tuple> tuples = block.getTuples();
+            for(Tuple tuple : tuples){
+                if(parseTree.where){
+                    parseTree.expressionTree.checkTuple(tuple);
+                }else{
+                    System.out.println(tuple);
+                    res.add(tuple);
+                }
+            }
+        }
     }
 
     private void dropQuery(String sql){
@@ -67,7 +86,22 @@ public class Query {
     }
 
     public void deleteQuery(String m){
+        ParseTree parseTree=parser.deleteStatement(m);
+        String tableName=parseTree.tables.get(0);
+        deleteTuples(tableName, parseTree);
 
+    }
+
+    private void deleteTuples(String tableName, ParseTree parseTree){
+        Relation relation=schemaMG.getRelation(tableName);
+        int RelationBlock=relation.getNumOfBlocks();
+        int MemoryBlock=memory.getMemorySize();
+
+        if(RelationBlock<MemoryBlock){
+            for(int i=0; i<RelationBlock; i++){
+                //relation.getBlocks();
+            }
+        }
     }
 
     private void insertQuery(String sql){

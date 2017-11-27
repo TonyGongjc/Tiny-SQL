@@ -1,5 +1,8 @@
 import storageManager.Tuple;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
@@ -160,7 +163,7 @@ public class ExpressionTree {
         }
     }
 
-    public void Tuplecheck(Tuple tuple){
+    public void checkTuple(Tuple tuple){
         ArrayList<String> TotalResult=new ArrayList<String>();
         for(int i=0; i<Roots.size(); i++){
             TotalResult.add(ReturnResults(tuple, Roots.get(i)));
@@ -188,6 +191,10 @@ public class ExpressionTree {
                 }
                 j++;
             }
+        }
+       // System.out.println(TotalResult.get(TotalResult.size()-1));
+        for(String s : TotalResult){
+            System.out.println(s);
         }
     }
 
@@ -248,7 +255,16 @@ public class ExpressionTree {
         }else if(isInteger(word)){
             return word;
         }else{
-            if(!tuple.getField(word).toString().equals("")){
+           // word=word.replace("\"", "");
+            ArrayList<String> tupleNames=tuple.getSchema().getFieldNames();
+            boolean contains=false;
+            for(String name:tupleNames){
+                if(word.equals(name)){
+                    contains=true;
+                    break;
+                }
+            }
+            if(contains){
                 return tuple.getField(word).toString();
             }else{
                 return word;
@@ -266,5 +282,15 @@ public class ExpressionTree {
             return false;
         }
         return true;
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
+        String s = br.readLine();
+        String[] Command= s.trim().toLowerCase().replaceAll("[,\\s]+", " ").split("\\s");
+        ExpressionTree P=new ExpressionTree(Command);
+        P.PrintTreeNode();
+        System.out.println(P.AndOrNots.size());
+        br.close();
     }
 }

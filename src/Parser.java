@@ -26,7 +26,7 @@ public class Parser {
         switch (first){
             case "create": createStatement(m);
             break;
-            case "select": SelectStatement(m);
+            case "select": selectStatement(m);
             break;
             case "drop"  : dropStatement(m);
             break;
@@ -98,15 +98,15 @@ public class Parser {
     }
 
 
-    public boolean SelectStatement(String m){
-        System.out.println("I'm in Select");
-        //String[] Command= m.trim().toLowerCase().replaceAll("[,\\s]+", ",").split(",");
+    public Statement selectStatement(String m){
         String[] Command= m.trim().toLowerCase().replaceAll("[,\\s]+", " ").split("\\s");
+
+        Statement stmt = new Statement();
         ParseTree parseTree = new ParseTree("select");
 
         for(int i=0; i<Command.length;i++) {
             String word=Command[i];
-            System.out.println(word);
+            //System.out.print(word);
             if (word.equals("distinct")) {
                 parseTree.distinct=true;
                 parseTree.distID=i;
@@ -135,14 +135,13 @@ public class Parser {
             parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, parseTree.whereID)));
             if(parseTree.order){
                 String[] condition= Arrays.copyOfRange(Command, parseTree.whereID+1, parseTree.orderID);
-                parseTree.expressionTree= new ExpressionTree(condition);
-                System.out.println("here");
+                parseTree.expressionTree = new ExpressionTree(condition);
                 parseTree.expressionTree.PrintTreeNode();
                 parseTree.orderBy=Command[Command.length-1];
             }else{
                 String[] condition=Arrays.copyOfRange(Command, parseTree.whereID+1,Command.length);
                 parseTree.expressionTree= new ExpressionTree(condition);
-                parseTree.expressionTree.PrintTreeNode();
+              //  parseTree.expressionTree.PrintTreeNode();
             }
         }else{
             if(parseTree.order){
@@ -151,14 +150,16 @@ public class Parser {
                 parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, Command.length)));
             }
         }
-        return true;
+
+        stmt.parseTree = parseTree;
+        return stmt;
     }
 
     public String dropStatement(String sql){
         return sql.split("[\\s]+")[2];
     }
 
-    public boolean deleteStatement(String m){
+    public ParseTree deleteStatement(String m){
         System.out.println("I'm in Delete");
         String[] Command= m.trim().toLowerCase().replaceAll("[,\\s]+", " ").split("\\s");
         ParseTree parseTree = new ParseTree("delete");
@@ -180,7 +181,7 @@ public class Parser {
                 parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, Command.length)));
         }
 
-        return true;
+        return parseTree;
     }
 
     public Statement insertStatement(String sql){
