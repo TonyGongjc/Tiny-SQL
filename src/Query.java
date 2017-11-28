@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import storageManager.*;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Comparator;
+
 
 public class Query {
     private static Parser parser;
@@ -104,6 +108,27 @@ public class Query {
             ArrayList<Tuple> result=selectQueryHelper(parseTree, relation, relationindex, 0, remainNumber);
             res.addAll(result);
         }
+
+        //if DISTINCT
+        if(parseTree.distinct){
+            rmDupTuples(res, parseTree.dist_attribute);
+        }
+        //if ORDER BY
+        if(parseTree.order){
+            sortTuples(res, parseTree.orderBy);
+        }
+
+        //print output tuples
+        for(Tuple tuple : res){
+            if(parseTree.attributes.get(0).equals("*")){
+                System.out.println(tuple);
+            }else{
+                for(String attr : parseTree.attributes){
+                    System.out.print(tuple.getField(attr) + " ");
+                }
+                System.out.println();
+            }
+        }
     }
 
     private ArrayList<Tuple> selectQueryHelper(ParseTree parseTree, Relation relation, int relationIndex, int memoryIndex, int loop ){
@@ -128,6 +153,46 @@ public class Query {
     private void dropQuery(String sql){
         Parser parser = new Parser();
         schemaMG.deleteRelation(parser.dropStatement(sql).trim());
+    }
+
+    private void sortTuples(ArrayList<Tuple> tuples, String fieldName){
+        ArrayList<Tuple> tmp = new ArrayList<>();
+        PriorityQueue<Tuple> pq = new PriorityQueue<Tuple>(new Comparator<Tuple>() {
+            @Override
+            //desc order
+            public int compare(Tuple t1, Tuple t2) {
+                if(t1.getField(fieldName).type.equals(FieldType.STR20)){
+                    return t1.getField(fieldName).str.compareTo(t2.getField(fieldName).str);
+                }else{
+                    return t1.getField(fieldName).integer > t2.getField(fieldName).integer ? 1 : -1;
+                }
+            }
+        });
+        pq.addAll(tuples);
+        tuples.clear();
+        while(!pq.isEmpty()){
+            tuples.add(pq.poll());
+        }
+    }
+
+    private void rmDupTuples(ArrayList<Tuple> tuples, String fieldName){
+        ArrayList<Tuple> tmp = new ArrayList<>(tuples);
+        tuples.clear();
+        if(tmp.get(0).getField(fieldName).type.equals(FieldType.INT)){
+            HashSet<Integer> hash = new HashSet<>();
+            for(Tuple tuple : tmp){
+                if(hash.add(tuple.getField(fieldName).integer)) {
+                    tuples.add(tuple);
+                }
+            }
+        }else{
+            HashSet<String> hash = new HashSet<>();
+            for(Tuple tuple : tmp){
+                if(hash.add(tuple.getField(fieldName).str)) {
+                    tuples.add(tuple);
+                }
+            }
+        }
     }
 
     public void deleteQuery(String m){
