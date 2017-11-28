@@ -146,6 +146,7 @@ public class Parser {
         }else{
             if(parseTree.order){
                 parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command,parseTree.fromID+1, parseTree.orderID)));
+                parseTree.orderBy= Command[Command.length-1];
             }else{
                 parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, Command.length)));
             }

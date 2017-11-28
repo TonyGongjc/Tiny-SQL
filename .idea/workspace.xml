@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c736d3e8-e5fe-4871-b7e1-8bb8d4f8d8b4" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/608TinySQL/Parser.class" afterPath="$PROJECT_DIR$/out/production/608TinySQL/Parser.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ExpressionTree.java" afterPath="$PROJECT_DIR$/src/ExpressionTree.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parser.java" afterPath="$PROJECT_DIR$/src/Parser.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Query.java" afterPath="$PROJECT_DIR$/src/Query.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Statement.java" afterPath="$PROJECT_DIR$/src/Statement.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,23 +25,23 @@
       <file leaf-file-name="Parser.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-3306">
-              <caret line="12" column="29" lean-forward="true" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
+            <state relative-caret-position="95">
+              <caret line="153" column="0" lean-forward="true" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#5671#5672#0" expanded="true" />
-                <element signature="e#5716#5717#0" expanded="true" />
+                <element signature="e#5733#5734#0" expanded="true" />
+                <element signature="e#5778#5779#0" expanded="true" />
                 <element signature="method#insertStatement#0;class#Parser#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExpressionTree.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ExpressionTree.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ExpressionTree.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="266" column="25" lean-forward="true" selection-start-line="266" selection-start-column="25" selection-end-line="266" selection-end-column="25" />
+            <state relative-caret-position="2356">
+              <caret line="166" column="62" lean-forward="true" selection-start-line="166" selection-start-column="62" selection-end-line="166" selection-end-column="62" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#Operator#0;class#ExpressionTree#0" expanded="false" />
@@ -51,7 +51,9 @@
                 <element signature="method#RightParenthesis#0;class#ExpressionTree#0" expanded="false" />
                 <element signature="method#Words#0;class#ExpressionTree#0" expanded="false" />
                 <element signature="method#PrintTreeNode#0;class#ExpressionTree#0" expanded="false" />
-                <element signature="e#5394#5402#0" expanded="true" />
+                <element signature="e#5396#5404#0" expanded="true" />
+                <element signature="method#PrintTraversal#0;class#ExpressionTree#0" expanded="false" />
+                <element signature="method#ReturnResults#0;class#ExpressionTree#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -60,18 +62,8 @@
       <file leaf-file-name="Tuple.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/storageManager/Tuple.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="166" column="46" lean-forward="true" selection-start-line="166" selection-start-column="46" selection-end-line="166" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestStorageManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/TestStorageManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19">
-              <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state relative-caret-position="380">
+              <caret line="173" column="4" lean-forward="true" selection-start-line="173" selection-start-column="4" selection-end-line="173" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -117,11 +109,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Query.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Relation.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/storageManager/Relation.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="87">
+              <caret line="123" column="54" lean-forward="true" selection-start-line="123" selection-start-column="54" selection-end-line="123" selection-end-column="54" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Query.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Query.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1354">
-              <caret line="159" column="13" lean-forward="true" selection-start-line="159" selection-start-column="13" selection-end-line="159" selection-end-column="13" />
+            <state relative-caret-position="204">
+              <caret line="104" column="31" lean-forward="false" selection-start-line="104" selection-start-column="31" selection-end-line="104" selection-end-column="31" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#insertQuery#0;class#Query#0" expanded="false" />
@@ -176,10 +178,10 @@
       <list>
         <option value="$PROJECT_DIR$/src/TreeNode.java" />
         <option value="$PROJECT_DIR$/src/ParseTree.java" />
-        <option value="$PROJECT_DIR$/src/Query.java" />
         <option value="$PROJECT_DIR$/src/Statement.java" />
         <option value="$PROJECT_DIR$/src/ExpressionTree.java" />
         <option value="$PROJECT_DIR$/src/Parser.java" />
+        <option value="$PROJECT_DIR$/src/Query.java" />
       </list>
     </option>
   </component>
@@ -374,7 +376,7 @@
       <updated>1510438952410</updated>
       <workItem from="1510438960096" duration="36707000" />
       <workItem from="1511400626469" duration="15559000" />
-      <workItem from="1511460246592" duration="101889000" />
+      <workItem from="1511460246592" duration="110325000" />
     </task>
     <task id="LOCAL-00001" summary="Commit finished">
       <created>1510603248803</created>
@@ -411,15 +413,21 @@
       <option name="project" value="LOCAL" />
       <updated>1511743486516</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="query finished">
+      <created>1511800581639</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1511800581639</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="154155000" />
+    <option name="totallyTimeSpent" value="162591000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="991" y="0" width="936" height="1087" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -429,7 +437,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3295688" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3295688" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -461,7 +469,8 @@
     <MESSAGE value="Commit finished" />
     <MESSAGE value="Select" />
     <MESSAGE value="Merge" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge" />
+    <MESSAGE value="query finished" />
+    <option name="LAST_COMMIT_MESSAGE" value="query finished" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -476,8 +485,8 @@
           <caret line="107" column="32" lean-forward="false" selection-start-line="107" selection-start-column="32" selection-end-line="107" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#5671#5672#0" expanded="true" />
-            <element signature="e#5716#5717#0" expanded="true" />
+            <element signature="e#5733#5734#0" expanded="true" />
+            <element signature="e#5778#5779#0" expanded="true" />
             <element signature="method#insertStatement#0;class#Parser#0" expanded="false" />
           </folding>
         </state>
@@ -496,7 +505,7 @@
             <element signature="method#RightParenthesis#0;class#ExpressionTree#0" expanded="false" />
             <element signature="method#Words#0;class#ExpressionTree#0" expanded="false" />
             <element signature="method#PrintTreeNode#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="e#5394#5402#0" expanded="true" />
+            <element signature="e#5396#5404#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -551,7 +560,7 @@
         <state relative-caret-position="608">
           <caret line="34" column="32" lean-forward="false" selection-start-line="34" selection-start-column="32" selection-end-line="34" selection-end-column="32" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -624,7 +633,7 @@
         <state relative-caret-position="646">
           <caret line="55" column="0" lean-forward="false" selection-start-line="55" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -633,14 +642,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="722">
           <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/storageManager/Relation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="581">
-          <caret line="125" column="39" lean-forward="false" selection-start-line="125" selection-start-column="39" selection-end-line="125" selection-end-column="39" />
           <folding />
         </state>
       </provider>
@@ -655,15 +656,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Query.java">
+    <entry file="file://$PROJECT_DIR$/src/storageManager/Schema.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1354">
-          <caret line="159" column="13" lean-forward="true" selection-start-line="159" selection-start-column="13" selection-end-line="159" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#insertQuery#0;class#Query#0" expanded="false" />
-            <element signature="method#appendTuple2Relation#0;class#Query#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="3230">
+          <caret line="192" column="0" lean-forward="false" selection-start-line="192" selection-start-column="0" selection-end-line="193" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ParseTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="589">
+          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -675,27 +680,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/storageManager/Schema.java">
+    <entry file="file://$PROJECT_DIR$/src/Parser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3230">
-          <caret line="192" column="0" lean-forward="false" selection-start-line="192" selection-start-column="0" selection-end-line="193" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="95">
+          <caret line="153" column="0" lean-forward="true" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#5733#5734#0" expanded="true" />
+            <element signature="e#5778#5779#0" expanded="true" />
+            <element signature="method#insertStatement#0;class#Parser#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TreeNode.java">
+    <entry file="file://$PROJECT_DIR$/src/ExpressionTree.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" column="5" lean-forward="true" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ParseTree.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="589">
-          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="2356">
+          <caret line="166" column="62" lean-forward="true" selection-start-line="166" selection-start-column="62" selection-end-line="166" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#Operator#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#Judge#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#getOrder#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#NodeOperation#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#RightParenthesis#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#Words#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#PrintTreeNode#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="e#5396#5404#0" expanded="true" />
+            <element signature="method#PrintTraversal#0;class#ExpressionTree#0" expanded="false" />
+            <element signature="method#ReturnResults#0;class#ExpressionTree#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -709,39 +723,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/storageManager/Tuple.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="166" column="46" lean-forward="true" selection-start-line="166" selection-start-column="46" selection-end-line="166" selection-end-column="46" />
+        <state relative-caret-position="380">
+          <caret line="173" column="4" lean-forward="true" selection-start-line="173" selection-start-column="4" selection-end-line="173" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parser.java">
+    <entry file="file://$PROJECT_DIR$/src/TreeNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3306">
-          <caret line="12" column="29" lean-forward="true" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#5671#5672#0" expanded="true" />
-            <element signature="e#5716#5717#0" expanded="true" />
-            <element signature="method#insertStatement#0;class#Parser#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="361">
+          <caret line="19" column="5" lean-forward="true" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ExpressionTree.java">
+    <entry file="file://$PROJECT_DIR$/src/storageManager/Relation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="266" column="25" lean-forward="true" selection-start-line="266" selection-start-column="25" selection-end-line="266" selection-end-column="25" />
+        <state relative-caret-position="87">
+          <caret line="123" column="54" lean-forward="true" selection-start-line="123" selection-start-column="54" selection-end-line="123" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Query.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="104" column="31" lean-forward="false" selection-start-line="104" selection-start-column="31" selection-end-line="104" selection-end-column="31" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#Operator#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="method#Judge#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="method#getOrder#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="method#NodeOperation#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="method#RightParenthesis#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="method#Words#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="method#PrintTreeNode#0;class#ExpressionTree#0" expanded="false" />
-            <element signature="e#5394#5402#0" expanded="true" />
+            <element signature="method#insertQuery#0;class#Query#0" expanded="false" />
+            <element signature="method#appendTuple2Relation#0;class#Query#0" expanded="false" />
           </folding>
         </state>
       </provider>

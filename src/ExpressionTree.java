@@ -163,7 +163,7 @@ public class ExpressionTree {
         }
     }
 
-    public void checkTuple(Tuple tuple){
+    public String checkTuple(Tuple tuple){
         ArrayList<String> TotalResult=new ArrayList<String>();
         for(int i=0; i<Roots.size(); i++){
             TotalResult.add(ReturnResults(tuple, Roots.get(i)));
@@ -196,6 +196,7 @@ public class ExpressionTree {
         for(String s : TotalResult){
             System.out.println(s);
         }
+        return TotalResult.get(TotalResult.size()-1);
     }
 
     private void PrintTraversal(TreeNode root){

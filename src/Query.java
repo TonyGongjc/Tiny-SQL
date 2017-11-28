@@ -27,7 +27,7 @@ public class Query {
         switch (first){
             case "create": this.createQuery(m);
                 break;
-            case "select": this.selectQuery(m);
+            case "select": this.SelectQuery(m);
                 break;
             case "drop"  : this.dropQuery(m);
                 break;
@@ -56,7 +56,7 @@ public class Query {
         schemaMG.createRelation(stmt.tableName, schema);
     }
 
-
+/*
     private void selectQuery(String sql){
         Statement stmt = parser.selectStatement(sql);
         ArrayList<Tuple> res = new ArrayList<>();
@@ -78,6 +78,51 @@ public class Query {
                 }
             }
         }
+    }
+    */
+
+    private void SelectQuery(String sql){
+        Statement stmt = parser.selectStatement(sql);
+        ArrayList<Tuple> res = new ArrayList<>();
+        ParseTree parseTree = stmt.parseTree;
+        String tableName = parseTree.tables.get(0);
+        Relation relation = schemaMG.getRelation(tableName);
+        int RelationNumber=relation.getNumOfBlocks();
+        int MemoryNumber=memory.getMemorySize();
+
+        if(RelationNumber<=MemoryNumber){
+            res=selectQueryHelper(parseTree, relation, 0, 0,RelationNumber);
+        }else{
+            int remainNumber=RelationNumber;
+            int relationindex=0;
+            while(remainNumber>MemoryNumber){
+                ArrayList<Tuple> result=selectQueryHelper(parseTree, relation, relationindex,0,MemoryNumber);
+                res.addAll(result);
+                remainNumber=remainNumber-MemoryNumber;
+                relationindex=relationindex+MemoryNumber;
+            }
+            ArrayList<Tuple> result=selectQueryHelper(parseTree, relation, relationindex, 0, remainNumber);
+            res.addAll(result);
+        }
+    }
+
+    private ArrayList<Tuple> selectQueryHelper(ParseTree parseTree, Relation relation, int relationIndex, int memoryIndex, int loop ){
+        Block block;
+        ArrayList<Tuple> res = new ArrayList<>();
+        relation.getBlocks(relationIndex, memoryIndex, loop);
+        for(int i=0; i<loop; i++){
+            block =memory.getBlock(i);
+            ArrayList<Tuple> tuples = block.getTuples();
+            for(Tuple tuple : tuples){
+                if(parseTree.where){
+                    parseTree.expressionTree.checkTuple(tuple);
+                }else{
+                    System.out.println(tuple);
+                    res.add(tuple);
+                }
+            }
+        }
+        return res;
     }
 
     private void dropQuery(String sql){
