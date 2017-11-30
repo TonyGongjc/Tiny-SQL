@@ -82,21 +82,17 @@
       <file leaf-file-name="Join.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Join.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1615">
-              <caret line="85" column="8" lean-forward="false" selection-start-line="85" selection-start-column="8" selection-end-line="85" selection-end-column="8" />
+            <state relative-caret-position="-3986">
+              <caret line="70" column="9" lean-forward="false" selection-start-line="70" selection-start-column="9" selection-end-line="70" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#80#111#0" expanded="true" />
-                <element signature="e#3182#3189#0" expanded="true" />
-                <element signature="e#5010#5041#0" expanded="true" />
-                <element signature="method#combineSchema#0;class#Join#0" expanded="false" />
-                <element signature="e#5200#5208#0" expanded="true" />
-                <element signature="e#5268#5279#0" expanded="true" />
-                <element signature="method#combineTuple#0;class#Join#0" expanded="false" />
-                <element signature="method#nestedLoopJoin#0;class#Join#0" expanded="false" />
-                <element signature="e#7579#7586#0" expanded="true" />
-                <element signature="method#onePassNaturalJoin#0;class#Join#0" expanded="false" />
-                <element signature="e#9823#9830#0" expanded="true" />
+                <element signature="e#2767#2774#0" expanded="true" />
+                <element signature="e#4595#4626#0" expanded="true" />
+                <element signature="e#4785#4793#0" expanded="true" />
+                <element signature="e#4853#4864#0" expanded="true" />
+                <element signature="e#7164#7171#0" expanded="true" />
+                <element signature="e#9408#9415#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -386,7 +382,7 @@
       <updated>1510438952410</updated>
       <workItem from="1510438960096" duration="36707000" />
       <workItem from="1511400626469" duration="15559000" />
-      <workItem from="1511460246592" duration="154229000" />
+      <workItem from="1511460246592" duration="154866000" />
     </task>
     <task id="LOCAL-00001" summary="Commit finished">
       <created>1510603248803</created>
@@ -458,11 +454,18 @@
       <option name="project" value="LOCAL" />
       <updated>1512065915544</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Join">
+      <created>1512076043111</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1512076043111</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="206495000" />
+    <option name="totallyTimeSpent" value="207132000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="68" y="-8" width="1860" height="1096" extended-state="6" />
@@ -813,21 +816,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Join.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1615">
-          <caret line="85" column="8" lean-forward="false" selection-start-line="85" selection-start-column="8" selection-end-line="85" selection-end-column="8" />
+        <state relative-caret-position="-3986">
+          <caret line="70" column="9" lean-forward="false" selection-start-line="70" selection-start-column="9" selection-end-line="70" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#80#111#0" expanded="true" />
-            <element signature="e#3182#3189#0" expanded="true" />
-            <element signature="e#5010#5041#0" expanded="true" />
-            <element signature="method#combineSchema#0;class#Join#0" expanded="false" />
-            <element signature="e#5200#5208#0" expanded="true" />
-            <element signature="e#5268#5279#0" expanded="true" />
-            <element signature="method#combineTuple#0;class#Join#0" expanded="false" />
-            <element signature="method#nestedLoopJoin#0;class#Join#0" expanded="false" />
-            <element signature="e#7579#7586#0" expanded="true" />
-            <element signature="method#onePassNaturalJoin#0;class#Join#0" expanded="false" />
-            <element signature="e#9823#9830#0" expanded="true" />
+            <element signature="e#2767#2774#0" expanded="true" />
+            <element signature="e#4595#4626#0" expanded="true" />
+            <element signature="e#4785#4793#0" expanded="true" />
+            <element signature="e#4853#4864#0" expanded="true" />
+            <element signature="e#7164#7171#0" expanded="true" />
+            <element signature="e#9408#9415#0" expanded="true" />
           </folding>
         </state>
       </provider>

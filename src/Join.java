@@ -46,9 +46,10 @@ public class Join {
             tupleBlocks = tupleNumber/tuplesPerBlock +1;
         }
 
-        int blockIndex = 0;
-        while(tupleBlocks>memory.getMemorySize()){
-            for(int i=0; i<memory.getMemorySize(); i++){
+        int sortedBlocks = 0;
+        while(sortedBlocks<memory.getMemorySize()){
+            int t = Math.min(memory.getMemorySize(), tupleBlocks-sortedBlocks);
+            for(int i=0; i<t; i++){
                 Block block = memory.getBlock(i);
                 block.clear();
                 for(int j=0; j<tuplesPerBlock; j++){
@@ -60,27 +61,14 @@ public class Join {
                         break;
                     }
                 }
-                tupleBlocks--;
-                blockIndex++;
             }
-            new_relation.setBlocks(blockIndex,0,memory.getMemorySize());
-        }
-        //remaining tuples
-        for(int i=0; i<tupleBlocks; i++){
-            Block block = memory.getBlock(i);
-            block.clear();
-            for(int j=0; j<tuplesPerBlock; j++){
-                if(!tuples.isEmpty()){
-                    Tuple temp = tuples.get(0);
-                    block.setTuple(j, temp);
-                    tuples.remove(temp);
-                }else{
-                    break;
-                }
+            new_relation.setBlocks(sortedBlocks,0,t);
+            if(t<memory.getMemorySize()){
+                break;
+            }else{
+                sortedBlocks +=memory.getMemorySize();
             }
-            blockIndex++;
         }
-        new_relation.setBlocks(blockIndex, 0, tupleBlocks);
 
         return new_relation;
 
