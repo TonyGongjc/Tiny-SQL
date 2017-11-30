@@ -274,7 +274,7 @@ public class ExpressionTree {
 
     }
 
-    private static boolean isInteger(String s){
+    public static boolean isInteger(String s){
         try{
             Integer.parseInt(s);
         }catch (NumberFormatException e){

@@ -174,12 +174,12 @@ public class Parser {
             }
         }
         if(parseTree.where){
-            parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, parseTree.whereID)));
+            parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, 2, parseTree.whereID)));
                 String[] condition=Arrays.copyOfRange(Command, parseTree.whereID+1,Command.length);
                 parseTree.expressionTree= new ExpressionTree(condition);
                 parseTree.expressionTree.PrintTreeNode();
         }else{
-                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, parseTree.fromID+1, Command.length)));
+                parseTree.tables= new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(Command, 2, Command.length)));
         }
 
         return parseTree;

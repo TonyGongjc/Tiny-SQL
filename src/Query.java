@@ -12,7 +12,7 @@ public class Query {
     private static Parser parser;
     private static MainMemory memory;
     private static Disk disk;
-    private static SchemaManager schemaMG;
+    public static SchemaManager schemaMG;
 
     public Query(){
         parser = null;
@@ -22,6 +22,7 @@ public class Query {
         disk.resetDiskIOs();
         disk.resetDiskTimer();
     }
+
 
     public void parseQuery(String m) throws Exception{
         String[] Command= m.trim().toLowerCase().split("\\s");
