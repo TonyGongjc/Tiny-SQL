@@ -5,71 +5,50 @@ import java.util.ArrayList;
 
 public class Join {
     @SuppressWarnings("Duplicates")
-    public static Relation crossJoin(ArrayList<String> tableNames, SchemaManager schema_manager, MainMemory memory) {
+    public static Relation crossJoin(SchemaManager schema_manager, MainMemory memory, String tableOne, String tableTwo) {
         Relation new_relation;
         ArrayList<Tuple> tuples;
 
-        if (tableNames.size() == 2) {
-            System.out.println("CrossJoin...\n");
-            String tableOne = tableNames.get(0);
-            String tableTwo = tableNames.get(1);
-            Relation TableOne = schema_manager.getRelation(tableOne);
-            Relation TableTwo = schema_manager.getRelation(tableTwo);
-            int sizeOne = TableOne.getNumOfBlocks();
-            int sizeTwo = TableTwo.getNumOfBlocks();
+        System.out.println("CrossJoin...\n");
+        Relation TableOne = schema_manager.getRelation(tableOne);
+        Relation TableTwo = schema_manager.getRelation(tableTwo);
+        int sizeOne = TableOne.getNumOfBlocks();
+        int sizeTwo = TableTwo.getNumOfBlocks();
 
 
-            Relation smallRelation;
-            if (sizeOne < sizeTwo) smallRelation = TableOne;
-            else smallRelation = TableTwo;
+        Relation smallRelation;
+        if (sizeOne < sizeTwo) smallRelation = TableOne;
+        else smallRelation = TableTwo;
 
-            //One pass...
-            if (smallRelation.getNumOfBlocks() < memory.getMemorySize()-1) {
-                tuples = onePassJoin(schema_manager, memory, tableOne, tableTwo);
-            }else{
-                tuples = nestedLoopJoin(schema_manager, memory, tableOne, tableTwo);
-            }
+        //One pass...
+        if (smallRelation.getNumOfBlocks() < memory.getMemorySize()-1) {
+            tuples = onePassJoin(schema_manager, memory, tableOne, tableTwo);
+        }else{
+            tuples = nestedLoopJoin(schema_manager, memory, tableOne, tableTwo);
+        }
 
-            Schema schema = combineSchema(schema_manager, tableOne, tableTwo);
-            String name = tableOne+"_cross_"+tableTwo;
+        Schema schema = combineSchema(schema_manager, tableOne, tableTwo);
+        String name = tableOne+"_cross_"+tableTwo;
 
-            if(schema_manager.relationExists(name)){
-                schema_manager.deleteRelation(name);
-            }
-            new_relation = schema_manager.createRelation(name, schema);
+        if(schema_manager.relationExists(name)){
+            schema_manager.deleteRelation(name);
+        }
+        new_relation = schema_manager.createRelation(name, schema);
 
-            int tupleNumber = tuples.size();
-            int tuplesPerBlock = schema.getTuplesPerBlock();
-            int tupleBlocks=0;
-            if(tupleNumber<tuplesPerBlock){
-                tupleBlocks = 1;
-            }else if(tupleNumber>tuplesPerBlock && tupleNumber%tuplesPerBlock==0){
-                tupleBlocks = tupleNumber/tuplesPerBlock;
-            }else{
-                tupleBlocks = tupleNumber/tuplesPerBlock +1;
-            }
+        int tupleNumber = tuples.size();
+        int tuplesPerBlock = schema.getTuplesPerBlock();
+        int tupleBlocks=0;
+        if(tupleNumber<tuplesPerBlock){
+            tupleBlocks = 1;
+        }else if(tupleNumber>tuplesPerBlock && tupleNumber%tuplesPerBlock==0){
+            tupleBlocks = tupleNumber/tuplesPerBlock;
+        }else{
+            tupleBlocks = tupleNumber/tuplesPerBlock +1;
+        }
 
-            int blockIndex = 0;
-            while(tupleBlocks>memory.getMemorySize()){
-                for(int i=0; i<memory.getMemorySize(); i++){
-                    Block block = memory.getBlock(i);
-                    block.clear();
-                    for(int j=0; j<tuplesPerBlock; j++){
-                        if(!tuples.isEmpty()){
-                            Tuple temp = tuples.get(0);
-                            block.setTuple(j, temp);
-                            tuples.remove(temp);
-                        }else{
-                            break;
-                        }
-                    }
-                    tupleBlocks--;
-                    blockIndex++;
-                }
-                new_relation.setBlocks(blockIndex,0,memory.getMemorySize());
-            }
-            //remaining tuples
-            for(int i=0; i<tupleBlocks; i++){
+        int blockIndex = 0;
+        while(tupleBlocks>memory.getMemorySize()){
+            for(int i=0; i<memory.getMemorySize(); i++){
                 Block block = memory.getBlock(i);
                 block.clear();
                 for(int j=0; j<tuplesPerBlock; j++){
@@ -81,15 +60,29 @@ public class Join {
                         break;
                     }
                 }
+                tupleBlocks--;
                 blockIndex++;
             }
-            new_relation.setBlocks(blockIndex, 0, tupleBlocks);
-
-            return new_relation;
-
+            new_relation.setBlocks(blockIndex,0,memory.getMemorySize());
         }
+        //remaining tuples
+        for(int i=0; i<tupleBlocks; i++){
+            Block block = memory.getBlock(i);
+            block.clear();
+            for(int j=0; j<tuplesPerBlock; j++){
+                if(!tuples.isEmpty()){
+                    Tuple temp = tuples.get(0);
+                    block.setTuple(j, temp);
+                    tuples.remove(temp);
+                }else{
+                    break;
+                }
+            }
+            blockIndex++;
+        }
+        new_relation.setBlocks(blockIndex, 0, tupleBlocks);
 
-        return null;
+        return new_relation;
 
     }
 
