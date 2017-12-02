@@ -114,10 +114,10 @@ public class Query {
                     ArrayList<String> joinInfo = multipleSelectHelper(condition);
                     if(i==0) {
                         relation = Join.naturalJoin(schemaMG, memory, joinInfo.get(0), joinInfo.get(1), joinInfo.get(2));
-                     //   break;
+                       // break;
                     }else{
-                        String name = relation.getRelationName();
-                        relation = Join.naturalJoin(schemaMG, memory, name, joinInfo.get(1), joinInfo.get(2));
+
+                        relation = Join.crossProduct(schemaMG, memory, relation.getRelationName(), joinInfo.get(1));
                     }
                 }
             }else{
@@ -131,7 +131,7 @@ public class Query {
             }
         }
         tempRelations.add(relation.getRelationName());
-/*
+
 
         //if DISTINCT
         if(parseTree.distinct){
@@ -153,8 +153,9 @@ public class Query {
             QueryHelper.clearMainMem(memory);
             tempRelations.add(relation.getRelationName());
         }
-        */
+
         //projection
+        System.out.println(relation.getNumOfTuples());
         QueryHelper.project(relation, memory, parseTree);
 
         System.out.println(relation.getRelationName());
@@ -272,12 +273,14 @@ public class Query {
     public static Relation crossJoin(String tableOne, String tableTwo){
         return Join.crossProduct(schemaMG, memory, tableOne, tableTwo);
     }
+    /*
     public static ArrayList<Tuple> onePassNaturalJoin(String tableOne, String tableTwo, String fieldName){
         return Join.onePassNaturalJoin(schemaMG, memory, tableOne, tableTwo, fieldName);
     }
     public static ArrayList<Tuple> twoPassNaturalJoin(String tableOne, String tableTwo, String fieldName){
         return Join.twoPassNaturalJoin(schemaMG, memory, tableOne, tableTwo, fieldName);
     }
+    */
 
     public static void main(String[] args) throws IOException {
         Query.reset();

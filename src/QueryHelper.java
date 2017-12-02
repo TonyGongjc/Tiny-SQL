@@ -57,8 +57,10 @@ public class QueryHelper {
     public static void project(Relation relation, MainMemory memory, ParseTree parseTree){
         int numOfBlocks = relation.getNumOfBlocks();
         int i = 0;
-        //System.out.println(relation);
+        System.out.println(relation);
+        System.out.println(numOfBlocks);
         while(i < numOfBlocks){
+            System.out.println("here!!!");
             int t = Math.min(memory.getMemorySize(), numOfBlocks - i);
             relation.getBlocks(i, 0, t);
             if(memory.getBlock(0).isEmpty()){
@@ -68,6 +70,7 @@ public class QueryHelper {
             projectHelper(relation, memory, parseTree, t);
             if(t <= memory.getMemorySize()) break;
             else i += 10;
+            System.out.println(i);
         }
     }
 

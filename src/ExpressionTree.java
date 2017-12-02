@@ -44,7 +44,6 @@ public class ExpressionTree {
         }else{
             checkNaturalJoin(condition);
         }
-        System.out.println(this.natureJoin.size());
     }
 
     private void checkNaturalJoin(String[] condition){

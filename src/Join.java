@@ -45,6 +45,7 @@ public class Join {
             tupleBlocks = tupleNumber/tuplesPerBlock +1;
         }
 
+
         int sortedBlocks = 0;
         //sortedBlocks < memory.getMemorySize() --> error!!!!
         while(sortedBlocks < tupleBlocks){
@@ -70,6 +71,7 @@ public class Join {
             }
 
         }
+
         return new_relation;
     }
 
@@ -274,6 +276,9 @@ public class Join {
         return tempRelation;
     }
 
+
+
+
     public static ArrayList<Tuple> onePassNaturalJoin(SchemaManager schemaManager, MainMemory memory, String tableOne, String tableTwo, String JoinOn){
         ArrayList<Tuple> tuples = new ArrayList<Tuple>();
         Relation TableOne = schemaManager.getRelation(tableOne);
@@ -475,6 +480,8 @@ public class Join {
         QueryHelper.clearMainMem(memory);
         return res;
     }
+
+
 
 
     private static int compareFields(Field a, Field b){
