@@ -1,8 +1,5 @@
 import storageManager.Tuple;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
@@ -15,19 +12,20 @@ public class ExpressionTree {
     public ArrayList<String> AndOrNots;
     public ArrayList<String[]> subconditions;
     public ArrayList<TreeNode> Roots;
+    public ArrayList<Pair<ArrayList<String>, String>> natureJoin;
 
     private Stack<String> OperatorStack;
     private Stack<TreeNode> TreeNodeStack;
 
 
     ExpressionTree(String[] condition){
-        this.OperatorStack=new Stack<String>();
-        this.TreeNodeStack=new Stack<TreeNode>();
-
-        this.Roots=new ArrayList<TreeNode>();
-        this.AndORs=new ArrayList<Integer>();
-        this.AndOrNots=new ArrayList<String>();
-        this.subconditions=new ArrayList<String[]>();
+        this.OperatorStack = new Stack<String>();
+        this.TreeNodeStack = new Stack<TreeNode>();
+        this.natureJoin = new ArrayList<Pair<ArrayList<String>, String>>();
+        this.Roots = new ArrayList<TreeNode>();
+        this.AndORs = new ArrayList<Integer>();
+        this.AndOrNots = new ArrayList<String>();
+        this.subconditions = new ArrayList<String[]>();
 
         SplitSubCondition(condition);
         if(!AndOR){
@@ -36,6 +34,29 @@ public class ExpressionTree {
             for(int i=0; i<subconditions.size();i++){
                 String[] condi=subconditions.get(i);
                 Roots.add(Build(condi));
+            }
+        }
+
+        if(subconditions.size()!=0) {
+            for (String[] sub : subconditions) {
+                checkNaturalJoin(sub);
+            }
+        }else{
+            checkNaturalJoin(condition);
+        }
+        System.out.println(this.natureJoin.size());
+    }
+
+    private void checkNaturalJoin(String[] condition){
+        if(condition.length==3){
+            if(condition[1].equals("=") && condition[0].contains(".") && condition[2].contains(".")){
+                if(condition[0].split("\\.")[1].equals(condition[2].split("\\.")[1])) {
+                    ArrayList<String> temp = new ArrayList<String>();
+                    temp.add(condition[0].split("\\.")[0]);
+                    temp.add(condition[2].split("\\.")[0]);
+                    Pair nature = new Pair<ArrayList<String>, String>(temp, condition[0].split("\\.")[1]);
+                    this.natureJoin.add(nature);
+                }
             }
         }
     }
@@ -92,15 +113,15 @@ public class ExpressionTree {
             }else {
                 String[] subcondition = Arrays.copyOfRange(condition, 0, AndORs.get(0));
                 subconditions.add(subcondition);
-                System.out.println("1");
+                //System.out.println("1");
                 for (int i = 0; i < AndORs.size() - 1; i++) {
                     subcondition = Arrays.copyOfRange(condition, AndORs.get(i) + 1, AndORs.get(i + 1));
                     subconditions.add(subcondition);
-                    System.out.println("2");
+                    //System.out.println("2");
                 }
                 subcondition = Arrays.copyOfRange(condition, AndORs.get(AndORs.size() - 1) + 1, condition.length);
                 subconditions.add(subcondition);
-                System.out.println("3");
+                //System.out.println("3");
             }
         }
     }
@@ -163,7 +184,7 @@ public class ExpressionTree {
         }
     }
 
-    public String checkTuple(Tuple tuple){
+    public boolean checkTuple(Tuple tuple){
         ArrayList<String> TotalResult=new ArrayList<String>();
         for(int i=0; i<Roots.size(); i++){
             TotalResult.add(ReturnResults(tuple, Roots.get(i)));
@@ -192,16 +213,12 @@ public class ExpressionTree {
                 j++;
             }
         }
-       // System.out.println(TotalResult.get(TotalResult.size()-1));
-        for(String s : TotalResult){
-            System.out.println(s);
-        }
-        return TotalResult.get(TotalResult.size()-1);
+        return TotalResult.get(TotalResult.size() - 1).equals("true");
     }
 
     private void PrintTraversal(TreeNode root){
         if(root.leftchild!=null) PrintTraversal(root.leftchild);
-        root.PrintNode();
+        //root.PrintNode();
         if(root.rightchild!=null) PrintTraversal(root.rightchild);
     }
 
@@ -256,16 +273,7 @@ public class ExpressionTree {
         }else if(isInteger(word)){
             return word;
         }else{
-           // word=word.replace("\"", "");
-            ArrayList<String> tupleNames=tuple.getSchema().getFieldNames();
-            boolean contains=false;
-            for(String name:tupleNames){
-                if(word.equals(name)){
-                    contains=true;
-                    break;
-                }
-            }
-            if(contains){
+            if(!tuple.getField(word).toString().equals("")){
                 return tuple.getField(word).toString();
             }else{
                 return word;
@@ -283,15 +291,5 @@ public class ExpressionTree {
             return false;
         }
         return true;
-    }
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br =new BufferedReader(new InputStreamReader(System.in));
-        String s = br.readLine();
-        String[] Command= s.trim().toLowerCase().replaceAll("[,\\s]+", " ").split("\\s");
-        ExpressionTree P=new ExpressionTree(Command);
-        P.PrintTreeNode();
-        System.out.println(P.AndOrNots.size());
-        br.close();
     }
 }

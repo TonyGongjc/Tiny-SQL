@@ -1,239 +1,251 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import storageManager.*;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Comparator;
-
 
 public class Query {
-    private static Parser parser;
-    private static MainMemory memory;
-    private static Disk disk;
-    public static SchemaManager schemaMG;
+    private static Parser parser = new Parser();
+    private static MainMemory memory = new MainMemory();
+    private static Disk disk = new Disk();
+    private static SchemaManager schemaMG = new SchemaManager(memory, disk);
 
-    public Query(){
-        parser = null;
+    public SchemaManager getSchemaMG() {
+        return schemaMG;
+    }
+
+    public Query(){ }
+
+    private static void reset(){
+        parser = new Parser();
         memory = new MainMemory();
         disk = new Disk();
-        schemaMG=new SchemaManager(memory, disk);
+        schemaMG = new SchemaManager(memory, disk);
         disk.resetDiskIOs();
         disk.resetDiskTimer();
     }
 
-
-    public void parseQuery(String m) throws Exception{
+    public static void parseQuery(String m){
+        m = m.toLowerCase();
         String[] Command= m.trim().toLowerCase().split("\\s");
         String first = Command[0];
-        parser = new Parser();
-        parser.Parse(m);
         switch (first){
-            case "create": this.createQuery(m);
+            case "create": createQuery(m);
                 break;
-            case "select": this.SelectQuery(m);
+            case "select": selectQuery(m);
                 break;
-            case "drop"  : this.dropQuery(m);
+            case "drop"  : dropQuery(m);
                 break;
-            case "delete": this.deleteQuery(m);
+            case "delete": deleteQuery(m);
                 break;
-            case "insert": this.insertQuery(m);
+            case "insert": insertQuery(m);
                 break;
-            default: throw new Exception("Not a legal command!");
+            default: System.out.println("Not a legal command!");
         }
     }
 
-    /*
-    public void CreateQuery(String m){
-        ArrayList<String> field_names= parser.fields;
-        ArrayList<FieldType> field_types= parser.fieldtypes;
-        Schema schema=new Schema(field_names,field_types);
-        //schemaMG.createRelation(parser.table_name,schema);
-        Relation relation_reference=schemaMG.createRelation(parser.table_name,schema);
-        System.out.print(relation_reference.getSchema() + "\n");
-
-    }
-    */
-    private void createQuery(String sql){
+    private static void createQuery(String sql){
         Statement stmt = parser.createStatement(sql);
         Schema schema = new Schema(stmt.fieldNames, stmt.fieldTypes);
         schemaMG.createRelation(stmt.tableName, schema);
     }
 
-/*
-    private void selectQuery(String sql){
+    private static void selectQuery(String sql){
         Statement stmt = parser.selectStatement(sql);
-        ArrayList<Tuple> res = new ArrayList<>();
         ParseTree parseTree = stmt.parseTree;
-        String tableName = parseTree.tables.get(0);
-        //Schema schema = schemaMG.getSchema(tableName);
-        Relation relation = schemaMG.getRelation(tableName);
-        Block block;
-        for(int i = 0; i < relation.getNumOfBlocks(); ++i){
-            relation.getBlock(i, 0);
-            block  = memory.getBlock(0);
-            ArrayList<Tuple> tuples = block.getTuples();
-            for(Tuple tuple : tuples){
-                if(parseTree.where){
-                    parseTree.expressionTree.checkTuple(tuple);
-                }else{
-                    System.out.println(tuple);
-                    res.add(tuple);
-                }
-            }
+
+        if(parseTree.tables.size() == 1){
+            selectSingleRelation(parseTree);
+        }else{
+            selectMultiRelation(parseTree);
         }
     }
-    */
 
-    private void SelectQuery(String sql){
-        Statement stmt = parser.selectStatement(sql);
-        ArrayList<Tuple> res = new ArrayList<>();
-        ParseTree parseTree = stmt.parseTree;
+    private static void selectSingleRelation(ParseTree parseTree){
         String tableName = parseTree.tables.get(0);
         Relation relation = schemaMG.getRelation(tableName);
-        int RelationNumber=relation.getNumOfBlocks();
-        int MemoryNumber=memory.getMemorySize();
-
-        if(RelationNumber<=MemoryNumber){
-            res=selectQueryHelper(parseTree, relation, 0, 0,RelationNumber);
-        }else{
-            int remainNumber=RelationNumber;
-            int relationindex=0;
-            while(remainNumber>MemoryNumber){
-                ArrayList<Tuple> result=selectQueryHelper(parseTree, relation, relationindex,0,MemoryNumber);
-                res.addAll(result);
-                remainNumber=remainNumber-MemoryNumber;
-                relationindex=relationindex+MemoryNumber;
-            }
-            ArrayList<Tuple> result=selectQueryHelper(parseTree, relation, relationindex, 0, remainNumber);
-            res.addAll(result);
-        }
+        ArrayList<String> tempRelations = new ArrayList<>();
 
         //if DISTINCT
         if(parseTree.distinct){
-            rmDupTuples(res, parseTree.dist_attribute);
+            relation = QueryHelper.distinct(schemaMG, relation, memory, parseTree.dist_attribute);
+            QueryHelper.clearMainMem(memory);
+            tempRelations.add(relation.getRelationName());
         }
+
+        //selection
+        if(parseTree.where){
+            relation = QueryHelper.select(schemaMG, relation, memory, parseTree);
+            QueryHelper.clearMainMem(memory);
+            tempRelations.add(relation.getRelationName());
+        }
+
         //if ORDER BY
         if(parseTree.order){
-            sortTuples(res, parseTree.orderBy);
+            relation = QueryHelper.sort(schemaMG, relation, memory, parseTree.orderBy);
+            QueryHelper.clearMainMem(memory);
+            tempRelations.add(relation.getRelationName());
         }
 
-        //print output tuples
-        for(Tuple tuple : res){
-            if(parseTree.attributes.get(0).equals("*")){
-                System.out.println(tuple);
+        //projection
+        QueryHelper.project(relation, memory, parseTree);
+
+        //delete all intermediate relations
+        if(tempRelations.isEmpty()) return;
+        for(String temp : tempRelations){
+            if(schemaMG.relationExists(temp)) schemaMG.deleteRelation(temp);
+        }
+    }
+
+
+    private static void selectMultiRelation(ParseTree parseTree){
+        Relation relation = null;
+        ArrayList<String> tempRelations = new ArrayList<>();
+        if(parseTree.tables.size()==2) {
+            if(parseTree.expressionTree.natureJoin.size() > 0){
+                Pair<ArrayList<String>, String> condition = parseTree.expressionTree.natureJoin.get(0);
+                ArrayList<String> joinInfo = multipleSelectHelper(condition);
+                relation = Join.naturalJoin(schemaMG, memory, joinInfo.get(0), joinInfo.get(1), joinInfo.get(2));
+            }else {
+                relation = Join.crossProduct(schemaMG, memory, parseTree.tables.get(0), parseTree.tables.get(1));
+            }
+        }else {
+            if(parseTree.expressionTree.natureJoin.size() !=0){
+                for(int i=0; i<2; i++){
+                    Pair<ArrayList<String>, String> condition = parseTree.expressionTree.natureJoin.get(i);
+                    ArrayList<String> joinInfo = multipleSelectHelper(condition);
+                    if(i==0) {
+                        relation = Join.naturalJoin(schemaMG, memory, joinInfo.get(0), joinInfo.get(1), joinInfo.get(2));
+                     //   break;
+                    }else{
+                        String name = relation.getRelationName();
+                        relation = Join.naturalJoin(schemaMG, memory, name, joinInfo.get(1), joinInfo.get(2));
+                    }
+                }
             }else{
-                for(String attr : parseTree.attributes){
-                    System.out.print(tuple.getField(attr) + " ");
-                }
-                System.out.println();
-            }
-        }
-    }
-
-    private ArrayList<Tuple> selectQueryHelper(ParseTree parseTree, Relation relation, int relationIndex, int memoryIndex, int loop ){
-        Block block;
-        ArrayList<Tuple> res = new ArrayList<>();
-        relation.getBlocks(relationIndex, memoryIndex, loop);
-        for(int i=0; i<loop; i++){
-            block =memory.getBlock(i);
-            ArrayList<Tuple> tuples = block.getTuples();
-            for(Tuple tuple : tuples){
-                if(parseTree.where){
-                    parseTree.expressionTree.checkTuple(tuple);
-                }else{
-                    System.out.println(tuple);
-                    res.add(tuple);
+                for(int i=0; i<parseTree.tables.size()-1; i++){
+                    if(i==0){
+                        relation = Join.crossProduct(schemaMG, memory, parseTree.tables.get(0), parseTree.tables.get(1));
+                    }else{
+                        relation = Join.crossProduct(schemaMG, memory, relation.getRelationName(), parseTree.tables.get(i+1));
+                    }
                 }
             }
         }
-        return res;
+        tempRelations.add(relation.getRelationName());
+/*
+
+        //if DISTINCT
+        if(parseTree.distinct){
+            relation = QueryHelper.distinct(schemaMG, relation, memory, parseTree.dist_attribute);
+            QueryHelper.clearMainMem(memory);
+            tempRelations.add(relation.getRelationName());
+        }
+
+        //selection
+        if(parseTree.where){
+            relation = QueryHelper.select(schemaMG, relation, memory, parseTree);
+            QueryHelper.clearMainMem(memory);
+            tempRelations.add(relation.getRelationName());
+        }
+
+        //if ORDER BY
+        if(parseTree.order){
+            relation = QueryHelper.sort(schemaMG, relation, memory, parseTree.orderBy);
+            QueryHelper.clearMainMem(memory);
+            tempRelations.add(relation.getRelationName());
+        }
+        */
+        //projection
+        QueryHelper.project(relation, memory, parseTree);
+
+        System.out.println(relation.getRelationName());
+        ArrayList<String> names = relation.getSchema().getFieldNames();
+        for(String name:names){
+            System.out.println(name);
+        }
+        if(tempRelations.isEmpty()) return;
+        for(String temp : tempRelations){
+            if(schemaMG.relationExists(temp)) schemaMG.deleteRelation(temp);
+        }
     }
 
-    private void dropQuery(String sql){
+    private static ArrayList<String> multipleSelectHelper(Pair<ArrayList<String>, String> condition){
+        ArrayList<String>joinInfo = new ArrayList<String>();
+        joinInfo.add(condition.first.get(0));
+        joinInfo.add(condition.first.get(1));
+        joinInfo.add(condition.second);
+        return joinInfo;
+    }
+
+    private static void dropQuery(String sql){
         Parser parser = new Parser();
         schemaMG.deleteRelation(parser.dropStatement(sql).trim());
     }
 
-    private void sortTuples(ArrayList<Tuple> tuples, String fieldName){
-        ArrayList<Tuple> tmp = new ArrayList<>();
-        PriorityQueue<Tuple> pq = new PriorityQueue<Tuple>(new Comparator<Tuple>() {
-            @Override
-            //desc order
-            public int compare(Tuple t1, Tuple t2) {
-                if(t1.getField(fieldName).type.equals(FieldType.STR20)){
-                    return t1.getField(fieldName).str.compareTo(t2.getField(fieldName).str);
+    //done: 1. optimize delete  2. filed size == 0  3. fill "holes"
+    private static void deleteQuery(String sql){
+        Statement stmt = parser.deleteStatement(sql);
+        ParseTree parseTree = stmt.parseTree;
+        String tableName = parseTree.tables.get(0);
+        Relation relation = schemaMG.getRelation(tableName);
+        int numOfBlocks = relation.getNumOfBlocks();
+        //relation block index
+        int i = 0;
+        while(i < numOfBlocks){
+            if(numOfBlocks - i <= 10){
+                relation.getBlocks(i, 0, numOfBlocks - i);
+                deleteQueryHelper(relation, memory, parseTree, i, numOfBlocks - i);
+                break;
+            }else{
+                relation.getBlocks(i, 0, memory.getMemorySize());
+                deleteQueryHelper(relation, memory, parseTree, i, memory.getMemorySize());
+                i += 10;
+            }
+        }
+        QueryHelper.fillHoles(relation, memory);
+    }
+
+    private static void deleteQueryHelper(Relation relation, MainMemory memory, ParseTree parseTree, int relation_block_index, int num_blocks){
+        Block block;
+        for(int i = 0; i < num_blocks; ++i){
+            block = memory.getBlock(i);
+            if(!block.isEmpty()){
+                ArrayList<Tuple> tuples = block.getTuples();
+                if(parseTree.where){
+                    for(int j = 0; j < tuples.size(); ++j){
+                        if(parseTree.expressionTree.checkTuple(tuples.get(j))){
+                            block.invalidateTuple(j);
+                        }
+                    }
                 }else{
-                    return t1.getField(fieldName).integer > t2.getField(fieldName).integer ? 1 : -1;
-                }
-            }
-        });
-        pq.addAll(tuples);
-        tuples.clear();
-        while(!pq.isEmpty()){
-            tuples.add(pq.poll());
-        }
-    }
-
-    private void rmDupTuples(ArrayList<Tuple> tuples, String fieldName){
-        ArrayList<Tuple> tmp = new ArrayList<>(tuples);
-        tuples.clear();
-        if(tmp.get(0).getField(fieldName).type.equals(FieldType.INT)){
-            HashSet<Integer> hash = new HashSet<>();
-            for(Tuple tuple : tmp){
-                if(hash.add(tuple.getField(fieldName).integer)) {
-                    tuples.add(tuple);
-                }
-            }
-        }else{
-            HashSet<String> hash = new HashSet<>();
-            for(Tuple tuple : tmp){
-                if(hash.add(tuple.getField(fieldName).str)) {
-                    tuples.add(tuple);
+                    block.invalidateTuples();
                 }
             }
         }
+        relation.setBlocks(relation_block_index, 0, num_blocks);
+        QueryHelper.clearMainMem(memory);
     }
 
-    public void deleteQuery(String m){
-        ParseTree parseTree=parser.deleteStatement(m);
-        String tableName=parseTree.tables.get(0);
-        deleteTuples(tableName, parseTree);
-
-    }
-
-    private void deleteTuples(String tableName, ParseTree parseTree){
-        Relation relation=schemaMG.getRelation(tableName);
-        int RelationBlock=relation.getNumOfBlocks();
-        int MemoryBlock=memory.getMemorySize();
-
-        if(RelationBlock<MemoryBlock){
-            for(int i=0; i<RelationBlock; i++){
-                //relation.getBlocks();
-            }
-        }
-    }
-
-    private void insertQuery(String sql){
+    //done: 1. handle null 2. handle "E"
+    //todo: "NULL"
+    private static void insertQuery(String sql){
         Statement stmt = parser.insertStatement(sql);
         Schema schema = schemaMG.getSchema(stmt.tableName);
         Relation relation = schemaMG.getRelation(stmt.tableName);
-        //System.out.println(stmt.fieldValues.get(0).size());
         for(int i = 0; i < stmt.fieldValues.size(); ++i){
             Tuple tuple = relation.createTuple();
             for(int j = 0; j < stmt.fieldValues.get(0).size(); ++j ){
                 String value = stmt.fieldValues.get(i).get(j);
                 if(schema.getFieldType(j) == FieldType.INT){
-                    tuple.setField(j, Integer.parseInt(value));
+                    //handle NULL case
+                    if(!value.equals("NULL")){
+                        tuple.setField(stmt.fieldNames.get(j), Integer.parseInt(value));
+                    }
                 }else{
-                    tuple.setField(j, value);
+                    tuple.setField(stmt.fieldNames.get(j), value);
                 }
             }
-            System.out.println(tuple.getField(0).integer);
             appendTuple2Relation(relation, tuple, 0);
         }
-        System.out.println(relation.getNumOfTuples());
     }
 
     private static void appendTuple2Relation(Relation relation, Tuple tuple, int memBlockIndex){
@@ -251,26 +263,98 @@ public class Query {
             }
         }else{
             block = memory.getBlock(memBlockIndex);
+            //be sure to clear the main memory block
+            block.clear();
             block.appendTuple(tuple);
             relation.setBlock(0, memBlockIndex);
         }
     }
-
-    public static void main(String[] args) throws IOException {
-
-        Query query = new Query();
-        while(true) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String s = br.readLine();
-            s = s.toLowerCase();
-            try {
-                query.parseQuery(s);
-            } catch (Exception e) {
-                System.out.println("Got an Exception:" + e.getMessage());
-                e.printStackTrace();
-            }
-            //br.close();
-        }
+    public static Relation crossJoin(String tableOne, String tableTwo){
+        return Join.crossProduct(schemaMG, memory, tableOne, tableTwo);
+    }
+    public static ArrayList<Tuple> onePassNaturalJoin(String tableOne, String tableTwo, String fieldName){
+        return Join.onePassNaturalJoin(schemaMG, memory, tableOne, tableTwo, fieldName);
+    }
+    public static ArrayList<Tuple> twoPassNaturalJoin(String tableOne, String tableTwo, String fieldName){
+        return Join.twoPassNaturalJoin(schemaMG, memory, tableOne, tableTwo, fieldName);
     }
 
+    public static void main(String[] args) throws IOException {
+        Query.reset();
+  /*
+        Query.parseQuery("CREATE TABLE course (sid INT, homework INT, project INT, exam INT, grade STR20)");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (1, 99, 100, 100, \"A\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (1, 100, 100, 98, \"C\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (1, 100, 50, 90, \"E\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (1, 100, 100, 100, \"A\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (9, 100, 100, 66, \"A\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (6, 50, 50, 61, \"D\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (7, 0, 0, 0, \"E\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (8, 0, 0, 0, \"E\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (5, 50, 50, 59, \"D\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (10, 50, 50, 56, \"D\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (11, 0, 0, 0, \"E\")");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (12, 100, 100, 66, \"A\"");
+        Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (20, 100, 100, 66, \"A\"");
+//        Query.parseQuery("SELECT sid, grade FROM course WHERE sid > 5 ORDER BY grade");
+
+        Query.parseQuery("CREATE TABLE course2 (sid INT, exam INT, grade STR20)");
+        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (1, 100, \"A\")");
+        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (1, 101, \"A\")");
+       // Query.parseQuery("SELECT * FROM course, course2");
+    //    Query.parseQuery("SELECT * FROM course, course2 WHERE course.sid = course2.sid ORDER BY course.exam");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (12, 25, \"E\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 25, \"E\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 25, \"E\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 25, \"E\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 25, \"E\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
+//        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (1, 25, \"E\")");
+*/
+        Query.parseQuery("CREATE TABLE r (a INT, b INT)");
+        Query.parseQuery("CREATE TABLE s (b INT, c INT)");
+        Query.parseQuery("CREATE TABLE t (a INT, c INT)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (2, 2)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (3, 3)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (2, 2)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (100, 100)");
+        Query.parseQuery("INSERT INTO r (a, b) VALUES (100, 100)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (2, 2)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (3, 3)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (2, 2)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (101, 101)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (101, 101)");
+        Query.parseQuery("INSERT INTO s (b, c) VALUES (101, 101)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (2, 2)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (0, 0)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (1, 1)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (2, 2)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (3, 3)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (102, 102)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (102, 102)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (102, 102)");
+        Query.parseQuery("INSERT INTO t (a, c) VALUES (102, 102)");
+
+        Query.parseQuery("SELECT * FROM r, s, t WHERE r.a = t.a AND r.b = s.b AND s.c = t.c");
+//        Relation relation = Query.crossJoin("course", "course2");
+//        ArrayList<Tuple> tuples = Query.twoPassNaturalJoin("course", "course2", "sid");
+//        for(Tuple tuple : tuples) System.out.println(tuple);
+    }
 }
