@@ -39,7 +39,7 @@ public class Join {
         int tupleBlocks;
         if(tupleNumber<tuplesPerBlock){
             tupleBlocks = 1;
-        }else if(tupleNumber>tuplesPerBlock && tupleNumber%tuplesPerBlock==0){
+        }else if(tupleNumber>=tuplesPerBlock && tupleNumber%tuplesPerBlock==0){
             tupleBlocks = tupleNumber/tuplesPerBlock;
         }else{
             tupleBlocks = tupleNumber/tuplesPerBlock +1;
@@ -243,7 +243,7 @@ public class Join {
         int tupleNumber = tuples.size(), tuplesPerBlock = schema.getTuplesPerBlock(), tupleBlocks = 0;
         if(tupleNumber < tuplesPerBlock){
             tupleBlocks = 1;
-        }else if(tupleNumber > tuplesPerBlock && tupleNumber % tuplesPerBlock == 0){
+        }else if(tupleNumber >= tuplesPerBlock && tupleNumber % tuplesPerBlock == 0){
             tupleBlocks = tupleNumber / tuplesPerBlock;
         }else{
             tupleBlocks = tupleNumber / tuplesPerBlock + 1;

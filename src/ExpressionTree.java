@@ -188,14 +188,24 @@ public class ExpressionTree {
         for(int i=0; i<Roots.size(); i++){
             TotalResult.add(ReturnResults(tuple, Roots.get(i)));
         }
+        for(String result:TotalResult){
+            System.out.print(result+" ");
+
+        }
+        System.out.println();
+
+        for(int i=0; i<AndOrNots.size(); i++){
+            String condition = AndOrNots.get(i);
+            if(condition.equals("not")){
+                if(TotalResult.get(i).equals("true"))
+                    TotalResult.set(i,"false");
+                else TotalResult.set(i, "true");
+            }
+        }
+
         int j=0;
         for(int i=0; i<AndOrNots.size(); i++){
             String condition=AndOrNots.get(i);
-            if(condition.equals("not")){
-                if(TotalResult.get(j).equals("true"))
-                    TotalResult.set(j,"false");
-                else TotalResult.set(j,"true");
-            }else{
                 if(condition.equals("and")){
                     if(TotalResult.get(j).equals("true")&&TotalResult.get(j+1).equals("true")){
 
@@ -203,7 +213,7 @@ public class ExpressionTree {
                         TotalResult.set(j,"false");
                         TotalResult.set(j+1,"false");
                     }
-                }else{
+                }else if(condition.equals("or")){
                     if(TotalResult.get(j).equals("true")||TotalResult.get(j+1).equals("true")){
                         TotalResult.set(j,"true");
                         TotalResult.set(j+1,"true");
@@ -211,7 +221,18 @@ public class ExpressionTree {
                 }
                 j++;
             }
+
+        for(String a:AndOrNots){
+            System.out.print(a+" ");
         }
+        System.out.println();
+        for(String result:TotalResult){
+            System.out.print(result+" ");
+
+        }
+        System.out.println();
+        System.out.println("-------------------");
+
         return TotalResult.get(TotalResult.size() - 1).equals("true");
     }
 
@@ -272,9 +293,10 @@ public class ExpressionTree {
         }else if(isInteger(word)){
             return word;
         }else{
-            if(!tuple.getField(word).toString().equals("")){
+            if(tuple.getSchema().fieldNamesToString().contains(word)){
                 return tuple.getField(word).toString();
             }else{
+                word = word.replace("\"","");
                 return word;
             }
         }

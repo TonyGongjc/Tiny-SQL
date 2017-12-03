@@ -153,7 +153,7 @@ public class Parser {
     public static void main(String[] args) throws IOException{
         String test1 = "create table table_name (c1 int, c2 int, c3 int)";
         String test2 = "insert into table_name (c1, c2, c3) values (1, 2, \"a\")";
-        String test3 = "SELECT * FROM r, s, t WHERE r.a = t.a AND r.b = s.b AND s.c = t.c";
+        String test3 = "select * from table_name where a > 3 and c = 2";
         Parser p = new Parser();
         p.createStatement(test1);
         p.insertStatement(test2);

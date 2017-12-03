@@ -127,7 +127,7 @@ public class QueryHelper {
         int tupleBlocks;
         if(tupleNumber < tuplesPerBlock){
             tupleBlocks = 1;
-        }else if(tupleNumber > tuplesPerBlock && tupleNumber % tuplesPerBlock == 0){
+        }else if(tupleNumber >= tuplesPerBlock && tupleNumber % tuplesPerBlock == 0){
             tupleBlocks = tupleNumber / tuplesPerBlock;
         }else{
             tupleBlocks = tupleNumber / tuplesPerBlock + 1;

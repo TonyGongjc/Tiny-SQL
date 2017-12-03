@@ -284,7 +284,7 @@ public class Query {
 
     public static void main(String[] args) throws IOException {
         Query.reset();
-  /*
+
         Query.parseQuery("CREATE TABLE course (sid INT, homework INT, project INT, exam INT, grade STR20)");
         Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (1, 99, 100, 100, \"A\")");
         Query.parseQuery("INSERT INTO course (sid, homework, project, exam, grade) VALUES (1, 100, 100, 98, \"C\")");
@@ -304,8 +304,9 @@ public class Query {
         Query.parseQuery("CREATE TABLE course2 (sid INT, exam INT, grade STR20)");
         Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (1, 100, \"A\")");
         Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (1, 101, \"A\")");
+        Query.parseQuery("SELECT * FROM course WHERE grade = \"C\" AND exam > 70 OR project > 70 AND NOT ( exam * 30 + homework * 20 + project * 50 ) / 100 < 60");
        // Query.parseQuery("SELECT * FROM course, course2");
-    //    Query.parseQuery("SELECT * FROM course, course2 WHERE course.sid = course2.sid ORDER BY course.exam");
+   //     Query.parseQuery("SELECT * FROM course, course2 WHERE course.sid = course2.sid ORDER BY course.exam");
 //        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (12, 25, \"E\")");
 //        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
 //        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 25, \"E\")");
@@ -317,7 +318,7 @@ public class Query {
 //        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 25, \"E\")");
 //        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (99, 100, \"A\")");
 //        Query.parseQuery("INSERT INTO course2 (sid, exam, grade) VALUES (1, 25, \"E\")");
-*/
+/*
         Query.parseQuery("CREATE TABLE r (a INT, b INT)");
         Query.parseQuery("CREATE TABLE s (b INT, c INT)");
         Query.parseQuery("CREATE TABLE t (a INT, c INT)");
@@ -359,5 +360,6 @@ public class Query {
 //        Relation relation = Query.crossJoin("course", "course2");
 //        ArrayList<Tuple> tuples = Query.twoPassNaturalJoin("course", "course2", "sid");
 //        for(Tuple tuple : tuples) System.out.println(tuple);
+*/
     }
 }
